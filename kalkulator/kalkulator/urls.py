@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from kalkulator_app.views import HelloWorld
+from kalkulator_app.views import HelloWorld, CalculatorView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', HelloWorld.as_view(), name='home')
+    path('', HelloWorld.as_view(), name='home'),
+    path('calculator/', CalculatorView.as_view(), name='calculator')
 ]
