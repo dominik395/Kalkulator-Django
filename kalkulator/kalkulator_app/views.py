@@ -11,5 +11,8 @@ class HelloWorld(View):
 
 class CalculatorView(View):
     def get(self, request):
-        return render(request, 'calculatorView.html')
-    
+        ctx = {
+            'num': '',
+            'history': ''
+        }
+        return render(request, 'calculatorView.html', ctx)
