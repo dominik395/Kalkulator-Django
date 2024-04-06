@@ -1,26 +1,29 @@
-let action = []
-let number = []
+let actionToCalculate = []
+let numberToParse = []
+let finalResult = 0
 let operatorActive = true
+let nextCalculate = false
 
 function view() {
-    document.querySelector('.calc-operation').innerHTML = `${action.join(' ')}`
-    document.querySelector('.calc-typed').innerHTML = `${number.join('')}<span class="blink-me">_</span>`
+    document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
+    document.querySelector('.calc-typed').innerHTML = `${numberToParse.join('')}<span class="blink-me">_</span>`
 }
 
 function resetCalculator() {
-    action = []
-    number = []
-    operator = []
+    actionToCalculate = []
+    numberToParse = []
+    finalResult = 0
+    nextCalculate = false
     document.querySelector('.calc-typed').innerHTML = '<span class="blink-me">_</span>'
     document.querySelector('.calc-operation').innerHTML = ''
 }
 
 function addNumber(num) {
     operatorActive = false   
-    if (num === '.' && number.includes('.')) {
+    if (num === '.' && numberToParse.includes('.')) {
         return
     } 
-    number.push(num)
+    numberToParse.push(num)
     view()
 }
 
@@ -30,16 +33,24 @@ function addOperator(operator) {
     }
     operatorActive = true
 
+    if (nextCalculate) {
+        actionToCalculate = [finalResult]
+    }
     convertNumberStringInToSingleNum()
-    document.querySelector('.calc-operation').innerHTML = `${action.join(' ')}`
+    document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
     document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
-    action = [...action, operator]
+
+    actionToCalculate = [...actionToCalculate, operator]
 }
 
 function convertNumberStringInToSingleNum() {
-    const singleNumber = number.join('')
-    action = [...action, +singleNumber]
-    number = []
+    if (numberToParse.length === 0) {
+        return
+    }
+
+    const singleNumber = numberToParse.join('')
+    actionToCalculate = [...actionToCalculate, +singleNumber]
+    numberToParse = []
 }
 
 function doCalculations() {
@@ -47,17 +58,18 @@ function doCalculations() {
         return
     }
     convertNumberStringInToSingleNum()
+    const result = calculations()
+    finalResult = result
 
-    document.querySelector('.calc-operation').innerHTML = `${action.join(' ')}`
-    document.querySelector('.calc-typed').innerHTML = `${calculations()}<span class="blink-me">_</span>`
-
-    console.log(action)
+    document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
+    document.querySelector('.calc-typed').innerHTML = `${result}<span class="blink-me">_</span>`
 }
 
 function calculations() {
-    let result = Number(action[0])
+    let result = Number(actionToCalculate[0])
+    nextCalculate = true
 
-    action.slice(1).forEach((el, idx, array) => {
+    actionToCalculate.slice(1).forEach((el, idx, array) => {
         if (el === '+') {
             result += array[idx + 1]
         } else if (el === '-') {
