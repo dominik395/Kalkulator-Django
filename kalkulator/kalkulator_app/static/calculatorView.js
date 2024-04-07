@@ -37,6 +37,11 @@ function addOperator(operator) {
     if (nextCalculate) {
         actionToCalculate = [finalResult]
     }
+
+    if (actionToCalculate.length !== 0 && actionToCalculate.some(el => ['+', '-', '/', '*', '%'].includes(el))) {
+        actionToCalculate = []
+    }
+
     convertNumberStringInToSingleNum()
     document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
     document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
@@ -93,8 +98,19 @@ function backspace() {
         operatorActive = false
     }
 
-    console.log(numberToParse, 'na gurze');
+    if (finalResult) {
+        const test = String(finalResult).slice(0, -1)
+        if (test === '') {
+            finalResult = 0
+            nextCalculate = false
+            document.querySelector('.calc-typed').innerHTML = `<span class="blink-me">_</span>`
+            return 
+        }
+        finalResult = +test
+        document.querySelector('.calc-typed').innerHTML = `${test}<span class="blink-me">_</span>`
+        return
+    }
+
     numberToParse.splice(+numberToParse.length - 1, 1)
-    console.log(numberToParse, 'na dole');
     view()
 }
