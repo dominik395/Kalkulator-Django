@@ -1,6 +1,6 @@
 let actionToCalculate = []
 let numberToParse = []
-let finalResult = 0
+let finalResult = null
 let operatorActive = true
 let nextCalculate = false
 
@@ -14,6 +14,7 @@ function resetCalculator() {
     numberToParse = []
     finalResult = 0
     nextCalculate = false
+    operatorActive = true
     document.querySelector('.calc-typed').innerHTML = '<span class="blink-me">_</span>'
     document.querySelector('.calc-operation').innerHTML = ''
 }
@@ -71,15 +72,29 @@ function calculations() {
 
     actionToCalculate.slice(1).forEach((el, idx, array) => {
         if (el === '+') {
-            result += array[idx + 1]
+            result += array[++idx]
         } else if (el === '-') {
-            result -= array[idx + 1]
+            result -= array[++idx]
         } else if (el === '*') {
-            result *= array[idx + 1]
+            result *= array[++idx]
         } else if (el === '/') {
-            result /= array[idx + 1]
+            result /= array[++idx]
+        } else if (el === '%') {
+            result %= array[++idx]
         }
     })
 
     return parseFloat(result.toFixed(2).toString())
+}
+
+function backspace() {
+    if (operatorActive && actionToCalculate.length !== 0) {
+        actionToCalculate.splice(+actionToCalculate.length - 1, 1)
+        operatorActive = false
+    }
+
+    console.log(numberToParse, 'na gurze');
+    numberToParse.splice(+numberToParse.length - 1, 1)
+    console.log(numberToParse, 'na dole');
+    view()
 }
