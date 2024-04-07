@@ -24,6 +24,18 @@ function addNumber(num) {
     if (num === '.' && numberToParse.includes('.')) {
         return
     } 
+
+    if (finalResult) {
+        numberToParse = []
+
+        parseFinalResultAndNum = `${finalResult}${num}`
+        finalResult = +parseFinalResultAndNum
+        numberToParse.push(+parseFinalResultAndNum)
+
+        view()
+        return
+    }
+
     numberToParse.push(num)
     view()
 }
@@ -43,9 +55,12 @@ function addOperator(operator) {
     }
 
     convertNumberStringInToSingleNum()
+
+    actionToCalculate = actionToCalculate.slice(0, 1)
     document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
     document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
 
+    finalResult = null
     actionToCalculate = [...actionToCalculate, operator]
 }
 
