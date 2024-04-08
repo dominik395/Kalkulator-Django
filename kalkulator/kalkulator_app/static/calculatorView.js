@@ -3,6 +3,9 @@ let numberToParse = []
 let finalResult = null
 let operatorActive = true
 let nextCalculate = false
+let backspaceClicked = false
+let newNumber = false
+let difrentNumber = false
 
 function view() {
     document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
@@ -15,6 +18,9 @@ function resetCalculator() {
     finalResult = 0
     nextCalculate = false
     operatorActive = true
+    backspaceClicked = false
+    newNumber = false
+    difrentNumber = false
     document.querySelector('.calc-typed').innerHTML = '<span class="blink-me">_</span>'
     document.querySelector('.calc-operation').innerHTML = ''
 }
@@ -31,6 +37,13 @@ function addNumber(num) {
         parseFinalResultAndNum = `${finalResult}${num}`
         finalResult = +parseFinalResultAndNum
         numberToParse.push(+parseFinalResultAndNum)
+
+        if (difrentNumber) {
+            view()
+            numberToParse = []
+
+            return
+        }
 
         view()
         return
@@ -50,22 +63,46 @@ function addOperator(operator) {
         actionToCalculate = [finalResult]
     }
 
-    if (actionToCalculate.length !== 0 && actionToCalculate.some(el => ['+', '-', '/', '*', '%'].includes(el))) {
-        actionToCalculate = []
-    }
+    if (backspaceClicked) {
+        if (newNumber) {
+            document.querySelector('.calc-operation').innerHTML = `${numberToParse.join('')}`
+            document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
+            backspaceClicked = false
+            newNumber = false
+            
+            actionToCalculate = [Number(numberToParse.join('')), operator]
+            numberToParse = []
 
+            return
+        }
+        document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
+        document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
+
+        actionToCalculate = [...actionToCalculate, operator]
+
+        nextCalculate = false
+        finalResult = null
+        backspaceClicked = false
+
+        return
+    }
     convertNumberStringInToSingleNum()
 
-    actionToCalculate = actionToCalculate.slice(0, 1)
     document.querySelector('.calc-operation').innerHTML = `${actionToCalculate.join(' ')}`
     document.querySelector('.calc-typed').innerHTML = `${operator}<span class="blink-me">_</span>`
 
+    nextCalculate = false
     finalResult = null
     actionToCalculate = [...actionToCalculate, operator]
 }
 
 function convertNumberStringInToSingleNum() {
     if (numberToParse.length === 0) {
+        return
+    }
+
+    if (finalResult) {
+        numberToParse = []
         return
     }
 
@@ -108,17 +145,25 @@ function calculations() {
 }
 
 function backspace() {
-    if (operatorActive && actionToCalculate.length !== 0) {
-        actionToCalculate.splice(+actionToCalculate.length - 1, 1)
+    backspaceClicked = true
+
+    if (operatorActive) {
+        actionToCalculate = actionToCalculate.splice(0, actionToCalculate.length - 1)
+        document.querySelector('.calc-typed').innerHTML = `<span class="blink-me">_</span>`
         operatorActive = false
+        backspaceClicked = false
+        return
     }
 
     if (finalResult) {
         const test = String(finalResult).slice(0, -1)
+        difrentNumber = true
         if (test === '') {
             finalResult = 0
             nextCalculate = false
             document.querySelector('.calc-typed').innerHTML = `<span class="blink-me">_</span>`
+            newNumber = true
+            difrentNumber = false
             return 
         }
         finalResult = +test
